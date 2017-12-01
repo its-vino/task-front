@@ -5,9 +5,15 @@
  * Date: 2017-10-12
  * Time: 8:51 PM
  */
+/**
+ * Modified to use REST client to get port data from our server.
+ */
+define('REST_SERVER', 'http://backend.local');  // the REST server host
+define('REST_PORT', $_SERVER['SERVER_PORT']);   // the port you are running the server on
 
 class Tasks extends XML_Model
 {
+    
     public function __construct()
     {
         parent::__construct(APPPATH . '../data/tasks.xml', 'id');
@@ -35,7 +41,6 @@ class Tasks extends XML_Model
 
     return $converted;
     }
-
     // provide form validation rules
     public function rules()
     {
@@ -46,6 +51,47 @@ class Tasks extends XML_Model
             ['field' => 'group', 'label' => 'Task group', 'rules' => 'integer|less_than[5]'],
         );
         return $config;
+    }
+    public function load(){
+        // load the $this->_data array
+        // load our data from the REST backend
+        $this->rest->initialize(array('server' => REST_SERVER));
+        $this->rest->option(CURLOPT_PORT, REST_PORT);
+        $this->_data =  $this->rest->get('/job');
+
+        // rebuild the field names from the first object
+        $one = array_values((array) $this->_data);
+        $this->_fields = array_keys((array)$one);
+        // rebuild the keys table
+        $this->reindex();
+    }
+    public function store(){
+
+    }
+    public function get($key, $key2 = null){
+        $this->rest->initialize(array('server' => REST_SERVER));
+        $this->rest->option(CURLOPT_PORT, REST_PORT);
+        return $this->rest->get('/job/' . $key);
+    }
+    public function delete($key, $key2 = null){
+        $this->rest->initialize(array('server' => REST_SERVER));
+        $this->rest->option(CURLOPT_PORT, REST_PORT);
+        $this->rest->delete('/job/' . $key);
+        $this->load(); // because the "database" might have changed
+    }
+    public function update($record){
+        $this->rest->initialize(array('server' => REST_SERVER));
+        $this->rest->option(CURLOPT_PORT, REST_PORT);
+        $key = $record->{$this->_keyfield};
+        $retrieved = $this->rest->put('/job/' . $key, $record);
+        $this->load(); // because the "database" might have changed
+    }
+    public function add($record){
+        $this->rest->initialize(array('server' => REST_SERVER));
+        $this->rest->option(CURLOPT_PORT, REST_PORT);
+        $key = $record->{$this->_keyfield};
+        $retrieved = $this->rest->post('/job/' . $key, $record);
+        $this->load(); // because the "database" might have changed
     }
 }
 
