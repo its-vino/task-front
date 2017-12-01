@@ -131,6 +131,7 @@ class Memory_Model extends CI_Model implements DataMapper
 		foreach ($names as $name) {
 			$object->$name = "";
 		}
+		var_dump($object);
 		return $object;
 	}
 

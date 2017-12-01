@@ -11,6 +11,7 @@ class Mtce extends Application {
         // Initiate adding a new task
         public function add()
         {
+            
             $task = $this->tasks->create();
             $this->session->set_userdata('task', $task);
             $this->showit();
@@ -31,6 +32,7 @@ class Mtce extends Application {
         {
             $this->load->helper('form');
             $task = $this->session->userdata('task');
+            
             $this->data['id'] = $task->id;
 
             // if no errors, pass an empty message
