@@ -61,6 +61,7 @@ class Tasks extends XML_Model
 
         // rebuild the field names from the first object
         $one = array_values((array) $this->_data);
+        reset($one);
         $this->_fields = array_keys((array)$one);
         // rebuild the keys table
         $this->reindex();
